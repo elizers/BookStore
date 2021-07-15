@@ -134,7 +134,7 @@ namespace BookStore
         /// <summary>
         /// Состояния кнопок "Сохранить" и "Сохранить изменения"
         /// </summary>
-        private bool IsRedacted
+        public bool IsRedacted
         {
             get
             {
