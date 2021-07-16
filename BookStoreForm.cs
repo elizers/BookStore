@@ -563,13 +563,21 @@ namespace BookStore
         /// <param name="e"></param>
         private void itemHTMLReport_Click(object sender, EventArgs e)
         {
-            XslCompiledTransform xslt = new XslCompiledTransform();
-            xslt.Load("TestDt.xslt");
-            xslt.Transform(FileName, "Books.html");
-            string path = Application.StartupPath + @"\Books.html";
-            var uri = new Uri(path);
-            BrowserForm bf = new BrowserForm(uri);
-            bf.Show();
+            try
+            {
+                XslCompiledTransform xslt = new XslCompiledTransform();
+                xslt.Load("TestDt.xslt");
+                xslt.Transform(FileName, "Books.html");
+                string path = Application.StartupPath + @"\Books.html";
+                var uri = new Uri(path);
+                BrowserForm bf = new BrowserForm(uri);
+                bf.Show();
+            }
+            catch(Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         /// <summary>
