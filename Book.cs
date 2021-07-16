@@ -96,7 +96,7 @@ namespace BookStore
             {
                 if (value > Max_Year)
                 {
-                    throw new ArgumentOutOfRangeException("Ошибка! Некорректное значение {nameof(value)}.");
+                    throw new ArgumentOutOfRangeException("Ошибка! Некорректное значение.");
                 }
                 
                 this.year = value;
