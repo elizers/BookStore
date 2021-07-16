@@ -302,9 +302,6 @@ namespace BookStore
             XmlDeclaration XmlDec = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
             xmlDocument.AppendChild(XmlDec);
 
-            //XmlProcessingInstruction pi = xmlDocument.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='nnew.xslt'");
-            //xmlDocument.AppendChild(pi);
-
             // создание корневого элемента
             XmlElement bookStoreElem = xmlDocument.CreateElement("bookstore");
             xmlDocument.AppendChild(bookStoreElem);
