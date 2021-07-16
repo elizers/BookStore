@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 
 namespace BookStore
 {
@@ -300,8 +302,8 @@ namespace BookStore
             XmlDeclaration XmlDec = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
             xmlDocument.AppendChild(XmlDec);
 
-            XmlProcessingInstruction pi = xmlDocument.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='nnew.xslt'");
-            xmlDocument.AppendChild(pi);
+            //XmlProcessingInstruction pi = xmlDocument.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='nnew.xslt'");
+            //xmlDocument.AppendChild(pi);
 
             // создание корневого элемента
             XmlElement bookStoreElem = xmlDocument.CreateElement("bookstore");
@@ -564,7 +566,11 @@ namespace BookStore
         /// <param name="e"></param>
         private void itemHTMLReport_Click(object sender, EventArgs e)
         {
-            var uri = new Uri(FileName);
+            XslCompiledTransform xslt = new XslCompiledTransform();
+            xslt.Load("TestDt.xslt");
+            xslt.Transform(FileName, "Books.html");
+            string path = Application.StartupPath + @"\Books.html";
+            var uri = new Uri(path);
             BrowserForm bf = new BrowserForm(uri);
             bf.Show();
         }
