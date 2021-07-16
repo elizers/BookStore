@@ -116,7 +116,7 @@ namespace BookStore
         /// <summary>
         /// Состояние редактирования данных
         /// </summary>
-        public bool IsTextBoAavailable
+        public bool IsTextBoxAvailable
         {
             get
             {
@@ -159,7 +159,7 @@ namespace BookStore
             _selectedBook = new Book();
             IsOpened = false;
             IsRedacted = false;
-            IsTextBoAavailable = false;
+            IsTextBoxAvailable = false;
             pressSaveFile = false;
             pressButtomAddRecord = false;
         }
@@ -241,6 +241,7 @@ namespace BookStore
             catch
             {
                 MessageBox.Show(this, "Ошибка! Не удаётся прочитать\n данные из файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IsOpened = false;
             }
 
         }
@@ -301,9 +302,6 @@ namespace BookStore
             //создание декларации документа
             XmlDeclaration XmlDec = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
             xmlDocument.AppendChild(XmlDec);
-
-            //XmlProcessingInstruction pi = xmlDocument.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='nnew.xslt'");
-            //xmlDocument.AppendChild(pi);
 
             // создание корневого элемента
             XmlElement bookStoreElem = xmlDocument.CreateElement("bookstore");
@@ -414,7 +412,7 @@ namespace BookStore
         /// <param name="e"></param>
         private void dtGrdVwBooks_SelectionChanged(object sender, EventArgs e)
         {
-            IsTextBoAavailable = true;
+            IsTextBoxAvailable = true;
             btnDeleteRecord.Enabled = true;
 
             if (dtGrdVwBooks.CurrentCell != null)
@@ -449,14 +447,7 @@ namespace BookStore
         {
             try
             {
-                Book book = new Book
-                {
-                    Title = txtBxTitle.Text,
-                    Author = txtBxAuthor.Text,
-                    Category = txtBxCategory.Text,
-                    Year = Int16.Parse(txtBxYear.Text),
-                    Price = float.Parse(txtBxPrice.Text)
-                };
+                Book book = InitBook();
 
                 if (dtGrdVwBooks.RowCount == 0)
                     throw new Exception("Удаление невозможно, так как в таблице нет элементов");
@@ -510,7 +501,7 @@ namespace BookStore
             if (dialogOpenFile.ShowDialog(this) == DialogResult.OK)
             {
                 IsOpened = true;
-                IsTextBoAavailable = true;
+                IsTextBoxAvailable = true;
                 IsRedacted = false;
                 FileName = dialogOpenFile.FileName;
                 FileStream stream = new FileStream(FileName, FileMode.Open);
@@ -566,13 +557,21 @@ namespace BookStore
         /// <param name="e"></param>
         private void itemHTMLReport_Click(object sender, EventArgs e)
         {
-            XslCompiledTransform xslt = new XslCompiledTransform();
-            xslt.Load("TestDt.xslt");
-            xslt.Transform(FileName, "Books.html");
-            string path = Application.StartupPath + @"\Books.html";
-            var uri = new Uri(path);
-            BrowserForm bf = new BrowserForm(uri);
-            bf.Show();
+            try
+            {
+                XslCompiledTransform xslt = new XslCompiledTransform();
+                xslt.Load("TestDt.xslt");
+                xslt.Transform(FileName, "Books.html");
+                string path = Application.StartupPath + @"\Books.html";
+                var uri = new Uri(path);
+                BrowserForm bf = new BrowserForm(uri);
+                bf.Show();
+            }
+            catch(Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         /// <summary>
@@ -592,14 +591,8 @@ namespace BookStore
                     DataRow new_row = table.NewRow();
                     table.Rows.Add(new_row);
 
-                    Book book = new Book
-                    {
-                        Title = txtBxTitle.Text,
-                        Author = txtBxAuthor.Text,
-                        Category = txtBxCategory.Text,
-                        Year = Int16.Parse(txtBxYear.Text),
-                        Price = float.Parse(txtBxPrice.Text.Replace('.', ','))
-                    };
+                    Book book = InitBook();
+
                     _books.Items.Add(book);
 
                     dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[0].Value = book.Title;
@@ -672,6 +665,24 @@ namespace BookStore
         }
 
         /// <summary>
+        /// Считывание информации о книге из полей ввода
+        /// </summary>
+        /// <returns></returns>
+        private Book InitBook()
+        {
+            Book book = new Book
+            {
+                Title = txtBxTitle.Text,
+                Author = txtBxAuthor.Text,
+                Category = txtBxCategory.Text,
+                Year = Int16.Parse(txtBxYear.Text),
+                Price = float.Parse(txtBxPrice.Text.Replace('.', ','))
+            };
+
+            return book;
+        }
+
+        /// <summary>
         /// Кнопка "Сохранить изменения"
         /// </summary>
         /// <param name="sender"></param>
@@ -680,15 +691,7 @@ namespace BookStore
         {
             try
             {
-                Book book = new Book
-                {
-                    Title = txtBxTitle.Text,
-                    Author = txtBxAuthor.Text,
-                    Category = txtBxCategory.Text,
-                    Year = Int16.Parse(txtBxYear.Text),
-                    Price = float.Parse(txtBxPrice.Text.Replace('.', ','))
-                };
-
+                Book book = InitBook();
                 var index = _books.Items.FindIndex(x => (x.Title == (_selectedBook.Title) && (x.Author == _selectedBook.Author)
                    && (x.Category == _selectedBook.Category)));
 
@@ -706,7 +709,7 @@ namespace BookStore
                 
                 MessageBox.Show("Данные успешно изменены", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                IsTextBoAavailable = false;
+                IsTextBoxAvailable = false;
                 ClearTextBoxs();
             }
 
@@ -739,5 +742,7 @@ namespace BookStore
             ClearTextBoxs();
             table.Clear();
         }
+
+
     }
 }
