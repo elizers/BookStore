@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BookStore
 {
@@ -21,7 +22,7 @@ namespace BookStore
         /// <summary>
         /// Автор книги
         /// </summary>
-        private string author;
+        private List<string> authors;
 
         /// <summary>
         /// Категория
@@ -56,15 +57,15 @@ namespace BookStore
         /// <summary>
         /// Автор
         /// </summary>
-        public string Author
+        public List<string> Authors
         {
             get
             {
-                return this.author;
+                return this.authors;
             }
             set
             {
-                this.author = value;
+                this.authors = value;
             }
         }
         
@@ -126,19 +127,10 @@ namespace BookStore
         public Book()
         {
             this.title = "";
-            this.author = "";
+            this.authors = new List<string>();
             this.category = "";
             this.year = 0;
             this.price = 0;
-        }
-
-        public Book(string title, string author, string category, int year, float price)
-        {
-            this.title = title;
-            this.author = author;
-            this.category = category;
-            this.year = year;
-            this.price = price;
         }
 
         /// <summary>
@@ -148,11 +140,50 @@ namespace BookStore
         /// <returns></returns>
         public bool Equals(Book other)
         {
-            return (this.Author == other.Author)
-                && (this.Title == other.Title)
-                && (this.Price == other.Price)
-                && (this.Category == other.Category)
-                && (this.Year == other.Year);
+            bool titleEq = (this.Title == other.Title);
+            MessageBox.Show("titleEq = " + titleEq);
+
+            bool priceEq = (this.Price == other.Price);
+            MessageBox.Show("priceEq =  " + priceEq);
+
+            bool catEq = (this.Category == other.Category);
+            MessageBox.Show("catEq = " + catEq);
+
+            bool yEq = (this.Year == other.Year);
+            MessageBox.Show("yEq =  " + yEq);
+            MessageBox.Show("yEq =  " + yEq);
+
+            return titleEq && priceEq && catEq && yEq && EqualsAuthors(this.Authors, other.Authors);
+            //return (this.Title == other.Title)
+            //    && (this.Price == other.Price)
+            //    && (this.Category == other.Category)
+            //    && (this.Year == other.Year)
+            //    && EqualsAuthors(this.Authors, other.Authors);
+        }
+
+        /// <summary>
+        /// Проверка на равенство авторов
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        private bool EqualsAuthors(List<string> t1, List<string> t2)
+        {
+            if (t1.Count != t2.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < t1.Count; i++)
+            {
+                MessageBox.Show("t1[i] =  " + t1[i]);
+                MessageBox.Show("t2[i] =  " + t2[i]);
+                if (t1[i] != t2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

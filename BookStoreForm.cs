@@ -170,6 +170,7 @@ namespace BookStore
         /// <param name="stream"></param>
         private void FromXML(FileStream stream)
         {
+            // getBook
             try
             {
                 XmlDocument xml = new XmlDocument();
@@ -180,7 +181,6 @@ namespace BookStore
                 foreach (XmlNode xnode in element)
                 {
                     Book book = new Book();
-                    int checkCount = 0;
 
                     if (xnode.Attributes.Count > 0)
                     {
@@ -200,11 +200,7 @@ namespace BookStore
                                 }
                             case ("author"):
                                 {
-                                    if (checkCount == 0)
-                                        book.Author = childnode.InnerText;
-                                    else
-                                        book.Author += childnode.InnerText + ";";
-                                    checkCount++;
+                                    book.Authors.Add(childnode.InnerText);
                                     break;
                                 }
                             case ("year"):
@@ -234,17 +230,24 @@ namespace BookStore
                 stream.Close();
 
                 txtBxTitle.Text = _books.Items[0].Title;
-                txtBxAuthor.Text = _books.Items[0].Author;
+                int i = 0;
+                while (i < (_books.Items[0].Authors.Count - 1))
+                {
+                    txtBxAuthor.Text += _books.Items[0].Authors[i] + "; ";
+                    i++;
+                }
+                txtBxAuthor.Text += _books.Items[0].Authors[i];
+
                 txtBxCategory.Text = _books.Items[0].Category;
+                txtBxYear.Text = _books.Items[0].Year.ToString();
                 txtBxPrice.Text = _books.Items[0].Price.ToString();
             }
             catch
             {
                 MessageBox.Show(this, "Ошибка! Не удаётся прочитать\n данные из файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 IsOpened = false;
-            }
-
         }
+    }
 
         /// <summary>
         /// Создание таблицы
@@ -286,7 +289,14 @@ namespace BookStore
             for (byte i = 0; i < _books.Items.Count; i++)
             {
                 dtGrdVwBooks.Rows[i].Cells[0].Value = _books.Items[i].Title;
-                dtGrdVwBooks.Rows[i].Cells[1].Value = _books.Items[i].Author;
+                int j = 0;
+                while (j < (_books.Items[i].Authors.Count - 1))
+                {
+                    dtGrdVwBooks.Rows[i].Cells[1].Value += _books.Items[i].Authors[j] + "; ";
+                    j++;
+                }
+                dtGrdVwBooks.Rows[i].Cells[1].Value += _books.Items[i].Authors[j]; 
+
                 dtGrdVwBooks.Rows[i].Cells[2].Value = _books.Items[i].Category;
                 dtGrdVwBooks.Rows[i].Cells[3].Value = _books.Items[i].Price;
             }
@@ -317,7 +327,7 @@ namespace BookStore
                 XmlAttribute langAttr = xmlDocument.CreateAttribute("lang");
 
                 XmlElement titleElem = xmlDocument.CreateElement("title");
-                XmlElement authorElem = xmlDocument.CreateElement("author");
+                //XmlElement authorElem = xmlDocument.CreateElement("author");
                 XmlElement yearElem = xmlDocument.CreateElement("year");
                 XmlElement priceElem = xmlDocument.CreateElement("price");
 
@@ -325,7 +335,21 @@ namespace BookStore
                 XmlText langText = xmlDocument.CreateTextNode("en");
 
                 XmlText titleText = xmlDocument.CreateTextNode(_books.Items[i].Title);
-                XmlText authorText = xmlDocument.CreateTextNode(_books.Items[i].Author);
+
+                int j = 0;
+                XmlText authorText;
+                //MessageBox.Show("_books.Items[i].Authors.Count = " + _books.Items[i].Authors.Count);
+                while (j < _books.Items[i].Authors.Count)
+                {
+                    //MessageBox.Show("j = " + j);
+                    //MessageBox.Show("_books.Items[i].Authors[j] = " + _books.Items[i].Authors[j]);
+                    XmlElement authorElem = xmlDocument.CreateElement("author");
+                    authorText = xmlDocument.CreateTextNode(_books.Items[i].Authors[j]);
+                    authorElem.AppendChild(authorText);
+                    bookElem.AppendChild(authorElem);
+                    j++;
+                }
+
                 XmlText yearText = xmlDocument.CreateTextNode(_books.Items[i].Year.ToString());
                 XmlText priceText = xmlDocument.CreateTextNode(_books.Items[i].Price.ToString());
 
@@ -333,7 +357,7 @@ namespace BookStore
                 langAttr.AppendChild(langText);
 
                 titleElem.AppendChild(titleText);
-                authorElem.AppendChild(authorText);
+
                 yearElem.AppendChild(yearText);
                 priceElem.AppendChild(priceText);
 
@@ -341,7 +365,7 @@ namespace BookStore
                 titleElem.Attributes.Append(langAttr);
 
                 bookElem.AppendChild(titleElem);
-                bookElem.AppendChild(authorElem);
+                
                 bookElem.AppendChild(yearElem);
                 bookElem.AppendChild(priceElem);
 
@@ -377,16 +401,22 @@ namespace BookStore
 
             for (byte i = 0; i < dtGrdVwBooks.RowCount; i++)
             {
-                Book book = new Book
-                {
-                    Title = dtGrdVwBooks.Rows[i].Cells[0].Value.ToString(),
-                    Author = dtGrdVwBooks.Rows[i].Cells[1].Value.ToString(),
-                    Category = dtGrdVwBooks.Rows[i].Cells[2].Value.ToString(),
-                    Price = float.Parse(dtGrdVwBooks.Rows[i].Cells[3].Value.ToString().Replace('.', ','))
-                };
+                Book book = new Book();
+                book.Title = dtGrdVwBooks.Rows[i].Cells[0].Value.ToString();
+                book.Authors = new List<string>();
+                int j = 0;
 
-                var index = booksList.Items.FindIndex(x => (x.Title == (book.Title) && (x.Author == book.Author) && (x.Category == book.Category)));
-                book.Year = booksList.Items[index].Year;
+                string[] authors = dtGrdVwBooks.Rows[i].Cells[1].Value.ToString().Split(';');
+
+                while (j < booksList.Items[i].Authors.Count)
+                {
+                    book.Authors.Add(authors[j].Trim());
+                    j++;
+                }
+
+                book.Category = dtGrdVwBooks.Rows[i].Cells[2].Value.ToString();
+                book.Price = float.Parse(dtGrdVwBooks.Rows[i].Cells[3].Value.ToString().Replace('.', ','));
+                book.Year = booksList.Items[i].Year;
 
                 _books.Items.Add(book);
             }
@@ -425,14 +455,23 @@ namespace BookStore
                 txtBxPrice.Text = dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value.ToString();
 
                 _selectedBook.Title = txtBxTitle.Text;
-                _selectedBook.Author = txtBxAuthor.Text;
-                _selectedBook.Category = txtBxCategory.Text;
 
-                var index = _books.Items.FindIndex(x => (x.Title == (_selectedBook.Title) && (x.Author == _selectedBook.Author)
-                     && (x.Category == _selectedBook.Category)));
-                if (index == -1) index = 0;
-                _selectedBook.Year = _books.Items[index].Year;
-                txtBxYear.Text = _selectedBook.Year.ToString();
+                if (txtBxTitle.Text != "")
+                {
+                    string[] authors = txtBxAuthor.Text.Split(';');
+                    int j = 0;
+                    _selectedBook.Authors = new List<string>();
+                    while (j < authors.Length)
+                    {
+                        _selectedBook.Authors.Add(authors[j]);
+                        j++;
+                    }
+                    _selectedBook.Category = txtBxCategory.Text;
+
+                    int index = dtGrdVwBooks.CurrentCell.RowIndex;
+                    _selectedBook.Year = _books.Items[index].Year;
+                    txtBxYear.Text = _selectedBook.Year.ToString();
+                }              
 
                 btnSaveEdit.Enabled = false;              
             }
@@ -452,21 +491,14 @@ namespace BookStore
                 if (dtGrdVwBooks.RowCount == 0)
                     throw new Exception("Удаление невозможно, так как в таблице нет элементов");
 
-                if (_books.Items.Remove(book))
-                {
-                    int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
-                    table.Rows.RemoveAt(selectedRowNum);
-                }
-                else
-                {
-                    throw new Exception("Не удаётся удалить выбранный элемент");
-                }
+                _books.Items.Remove(book);
+                int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
+                table.Rows.RemoveAt(selectedRowNum);
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.Message, "Не выполнено", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         /// <summary>
@@ -504,6 +536,7 @@ namespace BookStore
                 IsTextBoxAvailable = true;
                 IsRedacted = false;
                 FileName = dialogOpenFile.FileName;
+                itemAddress.Text = FileName;
                 FileStream stream = new FileStream(FileName, FileMode.Open);
                 FromXML(stream);
             }
@@ -596,7 +629,13 @@ namespace BookStore
                     _books.Items.Add(book);
 
                     dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[0].Value = book.Title;
-                    dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[1].Value = book.Author;
+                    int j = 0;
+                    while (j < book.Authors.Count)
+                    {
+                        dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[1].Value = book.Authors[j] + '\n';
+                        j++;
+                    }
+
                     dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[2].Value = book.Category;
                     dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[3].Value = book.Price;
                 }
@@ -670,14 +709,21 @@ namespace BookStore
         /// <returns></returns>
         private Book InitBook()
         {
-            Book book = new Book
+            Book book = new Book();
+            book.Title = txtBxTitle.Text;
+            book.Category = txtBxCategory.Text;
+            book.Year = Int16.Parse(txtBxYear.Text);
+            book.Price = float.Parse(txtBxPrice.Text.Replace('.', ','));
+
+            book.Authors = new List<string>();
+            string[] authors = txtBxAuthor.Text.Split(';');
+
+            int j = 0;
+            while (j < authors.Length)
             {
-                Title = txtBxTitle.Text,
-                Author = txtBxAuthor.Text,
-                Category = txtBxCategory.Text,
-                Year = Int16.Parse(txtBxYear.Text),
-                Price = float.Parse(txtBxPrice.Text.Replace('.', ','))
-            };
+                book.Authors.Add(authors[j].Trim());
+                j++;
+            }
 
             return book;
         }
@@ -692,16 +738,22 @@ namespace BookStore
             try
             {
                 Book book = InitBook();
-                var index = _books.Items.FindIndex(x => (x.Title == (_selectedBook.Title) && (x.Author == _selectedBook.Author)
-                   && (x.Category == _selectedBook.Category)));
-
-                _books.Items[index].Title = book.Title;
-                _books.Items[index].Author = book.Author;
-                _books.Items[index].Category = book.Category;
-                _books.Items[index].Year = book.Year;
-                _books.Items[index].Price = book.Price;
 
                 int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
+
+                _books.Items[selectedRowNum].Title = book.Title;
+                _books.Items[selectedRowNum].Authors = new List<string>();
+                int j = 0;
+                while (j < _books.Items[selectedRowNum].Authors.Count)
+                {
+                    _books.Items[selectedRowNum].Authors.Add(book.Authors[j]);
+                    j++;
+                }
+
+                _books.Items[selectedRowNum].Category = book.Category;
+                _books.Items[selectedRowNum].Year = book.Year;
+                _books.Items[selectedRowNum].Price = book.Price;
+
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[0].Value = txtBxTitle.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[1].Value = txtBxAuthor.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[2].Value = txtBxCategory.Text;
@@ -715,7 +767,7 @@ namespace BookStore
 
             catch
             {
-                MessageBox.Show("Не удалось сохранить изменения!", "Не Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Не удалось сохранить изменения!", "Не выполнено", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -742,7 +794,5 @@ namespace BookStore
             ClearTextBoxs();
             table.Clear();
         }
-
-
     }
 }

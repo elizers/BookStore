@@ -86,6 +86,10 @@ namespace BookStore
             // 
             this.dialogOpenFile.FileName = "dialogOpenFile";
             // 
+            // dialogSaveFile
+            // 
+            this.dialogSaveFile.Filter = "XML-файл (.xml)|.xml";
+            // 
             // btnDeleteRecord
             // 
             this.btnDeleteRecord.BackColor = System.Drawing.Color.Silver;
@@ -215,13 +219,14 @@ namespace BookStore
             // 
             // menuStrip1
             // 
+            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemFile,
             this.itemHTMLReport});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1227, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(1227, 36);
             this.menuStrip1.TabIndex = 21;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -235,7 +240,7 @@ namespace BookStore
             this.toolStripSeparator2,
             this.CloseFile});
             this.itemFile.Name = "itemFile";
-            this.itemFile.Size = new System.Drawing.Size(69, 29);
+            this.itemFile.Size = new System.Drawing.Size(69, 32);
             this.itemFile.Text = "Файл";
             // 
             // OpenFile
@@ -279,7 +284,7 @@ namespace BookStore
             // itemHTMLReport
             // 
             this.itemHTMLReport.Name = "itemHTMLReport";
-            this.itemHTMLReport.Size = new System.Drawing.Size(141, 29);
+            this.itemHTMLReport.Size = new System.Drawing.Size(141, 32);
             this.itemHTMLReport.Text = "Отчёт в HTML";
             this.itemHTMLReport.Click += new System.EventHandler(this.itemHTMLReport_Click);
             // 
