@@ -44,14 +44,8 @@ namespace BookStore
         /// </summary>
         public string Title
         {
-            get
-            {
-                return this.title;
-            }
-            set
-            {
-                this.title = value;
-            }
+            get => this.title;
+            set => this.title = value;
         }
 
         /// <summary>
@@ -59,14 +53,8 @@ namespace BookStore
         /// </summary>
         public List<string> Authors
         {
-            get
-            {
-                return this.authors;
-            }
-            set
-            {
-                this.authors = value;
-            }
+            get => this.authors;
+            set => this.authors = value;
         }
         
         /// <summary>
@@ -74,14 +62,8 @@ namespace BookStore
         /// </summary>
         public string Category
         {
-            get
-            {
-                return this.category;
-            }
-            set
-            {
-                this.category = value;
-            }
+            get => this.category;
+            set => this.category = value;
         }
 
         /// <summary>
@@ -140,25 +122,11 @@ namespace BookStore
         /// <returns></returns>
         public bool Equals(Book other)
         {
-            bool titleEq = (this.Title == other.Title);
-            MessageBox.Show("titleEq = " + titleEq);
-
-            bool priceEq = (this.Price == other.Price);
-            MessageBox.Show("priceEq =  " + priceEq);
-
-            bool catEq = (this.Category == other.Category);
-            MessageBox.Show("catEq = " + catEq);
-
-            bool yEq = (this.Year == other.Year);
-            MessageBox.Show("yEq =  " + yEq);
-            MessageBox.Show("yEq =  " + yEq);
-
-            return titleEq && priceEq && catEq && yEq && EqualsAuthors(this.Authors, other.Authors);
-            //return (this.Title == other.Title)
-            //    && (this.Price == other.Price)
-            //    && (this.Category == other.Category)
-            //    && (this.Year == other.Year)
-            //    && EqualsAuthors(this.Authors, other.Authors);
+            return (this.Title == other.Title)
+                && (this.Price == other.Price)
+                && (this.Category == other.Category)
+                && (this.Year == other.Year)
+                && EqualsAuthors(this.Authors, other.Authors);
         }
 
         /// <summary>
@@ -170,18 +138,12 @@ namespace BookStore
         private bool EqualsAuthors(List<string> t1, List<string> t2)
         {
             if (t1.Count != t2.Count)
-            {
                 return false;
-            }
 
             for (int i = 0; i < t1.Count; i++)
             {
-                MessageBox.Show("t1[i] =  " + t1[i]);
-                MessageBox.Show("t2[i] =  " + t2[i]);
                 if (t1[i] != t2[i])
-                {
                     return false;
-                }
             }
             return true;
         }

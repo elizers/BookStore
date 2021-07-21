@@ -19,10 +19,7 @@ namespace BookStore
 
         public List<Book> Items
         {
-            get
-            {
-                return this.items;
-            }
+            get => this.items;
         }
 
         /// <summary>
@@ -78,6 +75,5 @@ namespace BookStore
             }
             return true;
         }
-
     }
 }
