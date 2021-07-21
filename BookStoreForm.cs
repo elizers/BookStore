@@ -26,7 +26,7 @@ namespace BookStore
         /// <summary>
         /// Состояние редактирования данных
         /// </summary>
-        private bool _isTextBoAavailable;
+        private bool _isTextBoxAvailable;
 
         /// <summary>
         /// Состояния кнопок "Сохранить" и "Сохранить изменения"
@@ -49,11 +49,6 @@ namespace BookStore
         private string _filename;
 
         /// <summary>
-        /// Список книг
-        /// </summary>
-        private Books _books;
-
-        /// <summary>
         /// Текущая книга
         /// </summary>
         private Book _selectedBook;
@@ -63,19 +58,15 @@ namespace BookStore
         /// </summary>
         private DataTable table;
 
+        private Presenter presenter;
+
         /// <summary>
         /// Имя файла
         /// </summary>
         public string FileName
         {
-            get
-            {
-                return _filename;
-            }
-            set
-            {
-                _filename = value;
-            }
+            get => _filename;
+            set => _filename = value;
         }
 
         /// <summary>
@@ -99,15 +90,12 @@ namespace BookStore
                 btnClear.Enabled = value;
                 btnSave.Enabled = value;
                 btnSaveEdit.Enabled = value;
-
                 txtBxAuthor.Enabled = value;
                 txtBxCategory.Enabled = value;
                 txtBxPrice.Enabled = value;
                 txtBxTitle.Enabled = value;
                 txtBxYear.Enabled = value;
-
                 btnSaveEdit.Visible = value;
-
                 itemAddress.Text = (value) ? this.FileName : "<Адрес файла>";
                 _isOpened = value;
             }
@@ -120,7 +108,7 @@ namespace BookStore
         {
             get
             {
-                return this._isTextBoAavailable;
+                return this._isTextBoxAvailable;
             }
             set
             {
@@ -129,7 +117,7 @@ namespace BookStore
                 txtBxPrice.Enabled = value;
                 txtBxTitle.Enabled = value;
                 txtBxYear.Enabled = value;
-                _isTextBoAavailable = value;
+                _isTextBoxAvailable = value;
             }
         }
 
@@ -155,7 +143,7 @@ namespace BookStore
         public BookStoreForm()
         {
             InitializeComponent();
-            _books = new Books();
+            presenter = new Presenter();
             _selectedBook = new Book();
             IsOpened = false;
             IsRedacted = false;
@@ -170,84 +158,30 @@ namespace BookStore
         /// <param name="stream"></param>
         private void FromXML(FileStream stream)
         {
-            // getBook
             try
             {
-                XmlDocument xml = new XmlDocument();
-                xml.Load(stream);
-                XmlElement element = xml.DocumentElement;
-                _books.Items.Clear();
-
-                foreach (XmlNode xnode in element)
-                {
-                    Book book = new Book();
-
-                    if (xnode.Attributes.Count > 0)
-                    {
-                        XmlNode attr = xnode.Attributes.GetNamedItem("category");
-                        if (attr != null)
-                            book.Category = attr.Value;
-                    }
-
-                    foreach (XmlNode childnode in xnode.ChildNodes)
-                    {
-                        switch (childnode.Name)
-                        {
-                            case ("title"):
-                                {
-                                    book.Title = childnode.InnerText;
-                                    break;
-                                }
-                            case ("author"):
-                                {
-                                    book.Authors.Add(childnode.InnerText);
-                                    break;
-                                }
-                            case ("year"):
-                                {
-                                    book.Year = Int16.Parse(childnode.InnerText);
-                                    break;
-                                }
-                            case ("price"):
-                                {
-                                    book.Price = float.Parse(childnode.InnerText.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture);
-                                    break;
-                                }
-                            default:
-                                {
-                                    throw new IOException("Ошибка! Информация не может быть записана в файл.");
-                                }
-                        }
-
-                    }
-
-                    _books.Items.Add(book);
-                }
-
-                CreateTable(_books.Items.Count);
+                presenter.ReadXmlFile(stream);                 
+                CreateTable(presenter.BooksCount);
                 FillListBooksToDataGridView();
-
                 stream.Close();
-
-                txtBxTitle.Text = _books.Items[0].Title;
+                txtBxTitle.Text = presenter.Items[0].Title;
                 int i = 0;
-                while (i < (_books.Items[0].Authors.Count - 1))
+                while (i < (presenter.Items[0].Authors.Count - 1))
                 {
-                    txtBxAuthor.Text += _books.Items[0].Authors[i] + "; ";
+                    txtBxAuthor.Text += presenter.Items[0].Authors[i] + "; ";
                     i++;
                 }
-                txtBxAuthor.Text += _books.Items[0].Authors[i];
-
-                txtBxCategory.Text = _books.Items[0].Category;
-                txtBxYear.Text = _books.Items[0].Year.ToString();
-                txtBxPrice.Text = _books.Items[0].Price.ToString();
+                txtBxAuthor.Text += presenter.Items[0].Authors[i];
+                txtBxCategory.Text = presenter.Items[0].Category;
+                txtBxYear.Text = presenter.Items[0].Year.ToString();
+                txtBxPrice.Text = presenter.Items[0].Price.ToString();
             }
             catch
             {
                 MessageBox.Show(this, "Ошибка! Не удаётся прочитать\n данные из файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 IsOpened = false;
+            }
         }
-    }
 
         /// <summary>
         /// Создание таблицы
@@ -286,103 +220,19 @@ namespace BookStore
         /// </summary>
         private void FillListBooksToDataGridView()
         {
-            for (byte i = 0; i < _books.Items.Count; i++)
+            for (byte i = 0; i < presenter.BooksCount; i++)
             {
-                dtGrdVwBooks.Rows[i].Cells[0].Value = _books.Items[i].Title;
+                dtGrdVwBooks.Rows[i].Cells[0].Value = presenter.Items[i].Title;
                 int j = 0;
-                while (j < (_books.Items[i].Authors.Count - 1))
+                while (j < (presenter.Items[i].Authors.Count - 1))
                 {
-                    dtGrdVwBooks.Rows[i].Cells[1].Value += _books.Items[i].Authors[j] + "; ";
+                    dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j] + "; ";
                     j++;
                 }
-                dtGrdVwBooks.Rows[i].Cells[1].Value += _books.Items[i].Authors[j]; 
-
-                dtGrdVwBooks.Rows[i].Cells[2].Value = _books.Items[i].Category;
-                dtGrdVwBooks.Rows[i].Cells[3].Value = _books.Items[i].Price;
+                dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j]; 
+                dtGrdVwBooks.Rows[i].Cells[2].Value = presenter.Items[i].Category;
+                dtGrdVwBooks.Rows[i].Cells[3].Value = presenter.Items[i].Price;
             }
-        }
-
-        /// <summary>
-        /// Запись в xml-файл
-        /// </summary>
-        private void ToXML()
-        {
-            XmlDocument xmlDocument = new XmlDocument();
-
-            //создание декларации документа
-            XmlDeclaration XmlDec = xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null);
-            xmlDocument.AppendChild(XmlDec);
-
-            // создание корневого элемента
-            XmlElement bookStoreElem = xmlDocument.CreateElement("bookstore");
-            xmlDocument.AppendChild(bookStoreElem);
-
-            XmlElement xRoot = xmlDocument.DocumentElement;
-
-            for (int i = 0; i < _books.Items.Count; i++)
-            {
-                XmlElement bookElem = xmlDocument.CreateElement("book");
-
-                XmlAttribute categoryAttr = xmlDocument.CreateAttribute("category");
-                XmlAttribute langAttr = xmlDocument.CreateAttribute("lang");
-
-                XmlElement titleElem = xmlDocument.CreateElement("title");
-                //XmlElement authorElem = xmlDocument.CreateElement("author");
-                XmlElement yearElem = xmlDocument.CreateElement("year");
-                XmlElement priceElem = xmlDocument.CreateElement("price");
-
-                XmlText categoryText = xmlDocument.CreateTextNode(_books.Items[i].Category);
-                XmlText langText = xmlDocument.CreateTextNode("en");
-
-                XmlText titleText = xmlDocument.CreateTextNode(_books.Items[i].Title);
-
-                int j = 0;
-                XmlText authorText;
-                //MessageBox.Show("_books.Items[i].Authors.Count = " + _books.Items[i].Authors.Count);
-                while (j < _books.Items[i].Authors.Count)
-                {
-                    //MessageBox.Show("j = " + j);
-                    //MessageBox.Show("_books.Items[i].Authors[j] = " + _books.Items[i].Authors[j]);
-                    XmlElement authorElem = xmlDocument.CreateElement("author");
-                    authorText = xmlDocument.CreateTextNode(_books.Items[i].Authors[j]);
-                    authorElem.AppendChild(authorText);
-                    bookElem.AppendChild(authorElem);
-                    j++;
-                }
-
-                XmlText yearText = xmlDocument.CreateTextNode(_books.Items[i].Year.ToString());
-                XmlText priceText = xmlDocument.CreateTextNode(_books.Items[i].Price.ToString());
-
-                categoryAttr.AppendChild(categoryText);
-                langAttr.AppendChild(langText);
-
-                titleElem.AppendChild(titleText);
-
-                yearElem.AppendChild(yearText);
-                priceElem.AppendChild(priceText);
-
-                bookElem.Attributes.Append(categoryAttr);
-                titleElem.Attributes.Append(langAttr);
-
-                bookElem.AppendChild(titleElem);
-                
-                bookElem.AppendChild(yearElem);
-                bookElem.AppendChild(priceElem);
-
-                bookStoreElem.AppendChild(bookElem);
-                xRoot.AppendChild(bookElem);
-
-                if (pressSaveFile)
-                    xmlDocument.Save(FileName);
-                else
-                    xmlDocument.Save(dialogSaveFile.FileName);
-            }
-
-            if (pressSaveFile)
-                xmlDocument.Load(FileName);
-            else
-                xmlDocument.Load(dialogSaveFile.FileName);
-
         }
 
         /// <summary>
@@ -392,20 +242,18 @@ namespace BookStore
         {
             // заводим вспомогательный список, чтобы сохранилась информация о годе издания каждой книги
             Books booksList = new Books();
-            for (byte i = 0; i < _books.Items.Count; i++)
+            for (byte i = 0; i < presenter.Items.Count; i++)
             {
-                booksList.Items.Add(_books.Items[i]);
+                booksList.Items.Add(presenter.Items[i]);
             }
 
-            _books.Items.Clear();
-
+            presenter.Items.Clear();
             for (byte i = 0; i < dtGrdVwBooks.RowCount; i++)
             {
                 Book book = new Book();
                 book.Title = dtGrdVwBooks.Rows[i].Cells[0].Value.ToString();
                 book.Authors = new List<string>();
                 int j = 0;
-
                 string[] authors = dtGrdVwBooks.Rows[i].Cells[1].Value.ToString().Split(';');
 
                 while (j < booksList.Items[i].Authors.Count)
@@ -413,14 +261,13 @@ namespace BookStore
                     book.Authors.Add(authors[j].Trim());
                     j++;
                 }
-
                 book.Category = dtGrdVwBooks.Rows[i].Cells[2].Value.ToString();
                 book.Price = float.Parse(dtGrdVwBooks.Rows[i].Cells[3].Value.ToString().Replace('.', ','));
                 book.Year = booksList.Items[i].Year;
-
-                _books.Items.Add(book);
+                presenter.Items.Add(book);
             }
         }
+
 
         /// <summary>
         /// Кнопка "Добавить запись"
@@ -444,11 +291,9 @@ namespace BookStore
         {
             IsTextBoxAvailable = true;
             btnDeleteRecord.Enabled = true;
-
             if (dtGrdVwBooks.CurrentCell != null)
             {
                 int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
-
                 txtBxTitle.Text = dtGrdVwBooks.Rows[selectedRowNum].Cells[0].Value.ToString();
                 txtBxAuthor.Text = dtGrdVwBooks.Rows[selectedRowNum].Cells[1].Value.ToString();
                 txtBxCategory.Text = dtGrdVwBooks.Rows[selectedRowNum].Cells[2].Value.ToString();
@@ -469,7 +314,7 @@ namespace BookStore
                     _selectedBook.Category = txtBxCategory.Text;
 
                     int index = dtGrdVwBooks.CurrentCell.RowIndex;
-                    _selectedBook.Year = _books.Items[index].Year;
+                    _selectedBook.Year = presenter.Items[index].Year;
                     txtBxYear.Text = _selectedBook.Year.ToString();
                 }              
 
@@ -491,7 +336,7 @@ namespace BookStore
                 if (dtGrdVwBooks.RowCount == 0)
                     throw new Exception("Удаление невозможно, так как в таблице нет элементов");
 
-                _books.Items.Remove(book);
+                presenter.Items.Remove(book);
                 int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
                 table.Rows.RemoveAt(selectedRowNum);
             }
@@ -574,7 +419,7 @@ namespace BookStore
             try
             {
                 FillListBooksFromDataGridView();
-                ToXML();
+                presenter.WriteToXmlFile(pressSaveFile, FileName, dialogSaveFile.FileName);
                 MessageBox.Show("Данные успешно записаны в файл", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch
@@ -590,21 +435,7 @@ namespace BookStore
         /// <param name="e"></param>
         private void itemHTMLReport_Click(object sender, EventArgs e)
         {
-            try
-            {
-                XslCompiledTransform xslt = new XslCompiledTransform();
-                xslt.Load("TestDt.xslt");
-                xslt.Transform(FileName, "Books.html");
-                string path = Application.StartupPath + @"\Books.html";
-                var uri = new Uri(path);
-                BrowserForm bf = new BrowserForm(uri);
-                bf.Show();
-            }
-            catch(Exception exception)
-            {
-                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
+            presenter.HTMLReport(FileName);
         }
 
         /// <summary>
@@ -623,21 +454,17 @@ namespace BookStore
                     // создаём строку DataGridView
                     DataRow new_row = table.NewRow();
                     table.Rows.Add(new_row);
-
                     Book book = InitBook();
-
-                    _books.Items.Add(book);
-
-                    dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[0].Value = book.Title;
+                    presenter.Items.Add(book);
+                    dtGrdVwBooks.Rows[presenter.Items.Count - 1].Cells[0].Value = book.Title;
                     int j = 0;
                     while (j < book.Authors.Count)
                     {
-                        dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[1].Value = book.Authors[j] + '\n';
+                        dtGrdVwBooks.Rows[presenter.Items.Count - 1].Cells[1].Value = book.Authors[j] + '\n';
                         j++;
                     }
-
-                    dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[2].Value = book.Category;
-                    dtGrdVwBooks.Rows[_books.Items.Count - 1].Cells[3].Value = book.Price;
+                    dtGrdVwBooks.Rows[presenter.Items.Count - 1].Cells[2].Value = book.Category;
+                    dtGrdVwBooks.Rows[presenter.Items.Count - 1].Cells[3].Value = book.Price;
                 }
 
                 ClearTextBoxs();
@@ -714,10 +541,8 @@ namespace BookStore
             book.Category = txtBxCategory.Text;
             book.Year = Int16.Parse(txtBxYear.Text);
             book.Price = float.Parse(txtBxPrice.Text.Replace('.', ','));
-
             book.Authors = new List<string>();
             string[] authors = txtBxAuthor.Text.Split(';');
-
             int j = 0;
             while (j < authors.Length)
             {
@@ -738,21 +563,8 @@ namespace BookStore
             try
             {
                 Book book = InitBook();
-
                 int selectedRowNum = dtGrdVwBooks.CurrentCell.RowIndex;
-
-                _books.Items[selectedRowNum].Title = book.Title;
-                _books.Items[selectedRowNum].Authors = new List<string>();
-                int j = 0;
-                while (j < _books.Items[selectedRowNum].Authors.Count)
-                {
-                    _books.Items[selectedRowNum].Authors.Add(book.Authors[j]);
-                    j++;
-                }
-
-                _books.Items[selectedRowNum].Category = book.Category;
-                _books.Items[selectedRowNum].Year = book.Year;
-                _books.Items[selectedRowNum].Price = book.Price;
+                presenter.EditData(book, selectedRowNum);
 
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[0].Value = txtBxTitle.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[1].Value = txtBxAuthor.Text;
@@ -760,11 +572,9 @@ namespace BookStore
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value = txtBxPrice.Text;  
                 
                 MessageBox.Show("Данные успешно изменены", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 IsTextBoxAvailable = false;
                 ClearTextBoxs();
             }
-
             catch
             {
                 MessageBox.Show("Не удалось сохранить изменения!", "Не выполнено", MessageBoxButtons.OK, MessageBoxIcon.Error);
