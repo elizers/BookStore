@@ -569,8 +569,8 @@ namespace BookStore
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[0].Value = txtBxTitle.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[1].Value = txtBxAuthor.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[2].Value = txtBxCategory.Text;
-                dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value = txtBxPrice.Text;  
-                
+                dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value = txtBxPrice.Text;
+
                 MessageBox.Show("Данные успешно изменены", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 IsTextBoxAvailable = false;
                 ClearTextBoxs();

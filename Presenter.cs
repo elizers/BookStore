@@ -170,9 +170,10 @@ namespace BookStore
         public void EditData(Book book, int selectedRowNum)
         {
             _books.Items[selectedRowNum].Title = book.Title;
-            _books.Items[selectedRowNum].Authors = new List<string>();
             int j = 0;
-            while (j < _books.Items[selectedRowNum].Authors.Count)
+            int count = _books.Items[selectedRowNum].Authors.Count;
+            _books.Items[selectedRowNum].Authors.Clear();
+            while (j < count)
             {
                 _books.Items[selectedRowNum].Authors.Add(book.Authors[j]);
                 j++;
