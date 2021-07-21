@@ -153,89 +153,6 @@ namespace BookStore
         }
 
         /// <summary>
-        /// Чтение из xml-файла
-        /// </summary>
-        /// <param name="stream"></param>
-        private void FromXML(FileStream stream)
-        {
-            try
-            {
-                presenter.ReadXmlFile(stream);                 
-                CreateTable(presenter.BooksCount);
-                FillListBooksToDataGridView();
-                stream.Close();
-                txtBxTitle.Text = presenter.Items[0].Title;
-                int i = 0;
-                while (i < (presenter.Items[0].Authors.Count - 1))
-                {
-                    txtBxAuthor.Text += presenter.Items[0].Authors[i] + "; ";
-                    i++;
-                }
-                txtBxAuthor.Text += presenter.Items[0].Authors[i];
-                txtBxCategory.Text = presenter.Items[0].Category;
-                txtBxYear.Text = presenter.Items[0].Year.ToString();
-                txtBxPrice.Text = presenter.Items[0].Price.ToString();
-            }
-            catch
-            {
-                MessageBox.Show(this, "Ошибка! Не удаётся прочитать\n данные из файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                IsOpened = false;
-            }
-        }
-
-        /// <summary>
-        /// Создание таблицы
-        /// </summary>
-        private void CreateTable(int count)
-        {
-            table = new DataTable("Table");
-            DataColumn[] columns = new DataColumn[4];
-            for (int i = 0; i < 4; i++)
-            {
-                columns[i] = new DataColumn(i.ToString());
-                table.Columns.Add(columns[i]);
-            }
-            for (int i = 0; i < count; i++)
-            {
-                DataRow new_row = table.NewRow();
-                table.Rows.Add(new_row);
-            }
-            dtGrdVwBooks.DataSource = table;
-
-            // устанавливаем динамическое расширение строки
-            dtGrdVwBooks.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            dtGrdVwBooks.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-
-            string[] array = { "Книга", "Автор", "Категория", "Цена" };
-            int k = 140;
-            for (int i = 0; i < array.Length; i++)
-            {
-                dtGrdVwBooks.Columns[i].HeaderText = array[i];
-                dtGrdVwBooks.Columns[i].Width = k - i*10;
-            }
-        }
-
-        /// <summary>
-        /// Заполнение строк в DataGridView
-        /// </summary>
-        private void FillListBooksToDataGridView()
-        {
-            for (byte i = 0; i < presenter.BooksCount; i++)
-            {
-                dtGrdVwBooks.Rows[i].Cells[0].Value = presenter.Items[i].Title;
-                int j = 0;
-                while (j < (presenter.Items[i].Authors.Count - 1))
-                {
-                    dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j] + "; ";
-                    j++;
-                }
-                dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j]; 
-                dtGrdVwBooks.Rows[i].Cells[2].Value = presenter.Items[i].Category;
-                dtGrdVwBooks.Rows[i].Cells[3].Value = presenter.Items[i].Price;
-            }
-        }
-
-        /// <summary>
         /// Заполнение списка книг информацией из DataGridView
         /// </summary>
         private void FillListBooksFromDataGridView()
@@ -347,6 +264,29 @@ namespace BookStore
         }
 
         /// <summary>
+        /// Считывание информации о книге из полей ввода
+        /// </summary>
+        /// <returns></returns>
+        private Book InitBook()
+        {
+            Book book = new Book();
+            book.Title = txtBxTitle.Text;
+            book.Category = txtBxCategory.Text;
+            book.Year = Int16.Parse(txtBxYear.Text);
+            book.Price = float.Parse(txtBxPrice.Text.Replace('.', ','));
+            book.Authors = new List<string>();
+            string[] authors = txtBxAuthor.Text.Split(';');
+            int j = 0;
+            while (j < authors.Length)
+            {
+                book.Authors.Add(authors[j].Trim());
+                j++;
+            }
+
+            return book;
+        }
+
+        /// <summary>
         /// Отключение сортировки столбцов
         /// </summary>
         /// <param name="sender"></param>
@@ -384,6 +324,89 @@ namespace BookStore
                 itemAddress.Text = FileName;
                 FileStream stream = new FileStream(FileName, FileMode.Open);
                 FromXML(stream);
+            }
+        }
+
+        /// <summary>
+        /// Чтение из xml-файла
+        /// </summary>
+        /// <param name="stream"></param>
+        private void FromXML(FileStream stream)
+        {
+            try
+            {
+                presenter.ReadXmlFile(stream);
+                CreateTable(presenter.BooksCount);
+                FillListBooksToDataGridView();
+                stream.Close();
+                txtBxTitle.Text = presenter.Items[0].Title;
+                int i = 0;
+                while (i < (presenter.Items[0].Authors.Count - 1))
+                {
+                    txtBxAuthor.Text += presenter.Items[0].Authors[i] + "; ";
+                    i++;
+                }
+                txtBxAuthor.Text += presenter.Items[0].Authors[i];
+                txtBxCategory.Text = presenter.Items[0].Category;
+                txtBxYear.Text = presenter.Items[0].Year.ToString();
+                txtBxPrice.Text = presenter.Items[0].Price.ToString();
+            }
+            catch
+            {
+                MessageBox.Show(this, "Ошибка! Не удаётся прочитать\n данные из файла.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IsOpened = false;
+            }
+        }
+
+        /// <summary>
+        /// Создание таблицы
+        /// </summary>
+        private void CreateTable(int count)
+        {
+            table = new DataTable("Table");
+            DataColumn[] columns = new DataColumn[4];
+            for (int i = 0; i < 4; i++)
+            {
+                columns[i] = new DataColumn(i.ToString());
+                table.Columns.Add(columns[i]);
+            }
+            for (int i = 0; i < count; i++)
+            {
+                DataRow new_row = table.NewRow();
+                table.Rows.Add(new_row);
+            }
+            dtGrdVwBooks.DataSource = table;
+
+            // устанавливаем динамическое расширение строки
+            dtGrdVwBooks.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dtGrdVwBooks.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+            string[] array = { "Книга", "Автор", "Категория", "Цена" };
+            int k = 140;
+            for (int i = 0; i < array.Length; i++)
+            {
+                dtGrdVwBooks.Columns[i].HeaderText = array[i];
+                dtGrdVwBooks.Columns[i].Width = k - i * 10;
+            }
+        }
+
+        /// <summary>
+        /// Заполнение строк в DataGridView
+        /// </summary>
+        private void FillListBooksToDataGridView()
+        {
+            for (byte i = 0; i < presenter.BooksCount; i++)
+            {
+                dtGrdVwBooks.Rows[i].Cells[0].Value = presenter.Items[i].Title;
+                int j = 0;
+                while (j < (presenter.Items[i].Authors.Count - 1))
+                {
+                    dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j] + "; ";
+                    j++;
+                }
+                dtGrdVwBooks.Rows[i].Cells[1].Value += presenter.Items[i].Authors[j];
+                dtGrdVwBooks.Rows[i].Cells[2].Value = presenter.Items[i].Category;
+                dtGrdVwBooks.Rows[i].Cells[3].Value = presenter.Items[i].Price;
             }
         }
 
@@ -531,29 +554,6 @@ namespace BookStore
         }
 
         /// <summary>
-        /// Считывание информации о книге из полей ввода
-        /// </summary>
-        /// <returns></returns>
-        private Book InitBook()
-        {
-            Book book = new Book();
-            book.Title = txtBxTitle.Text;
-            book.Category = txtBxCategory.Text;
-            book.Year = Int16.Parse(txtBxYear.Text);
-            book.Price = float.Parse(txtBxPrice.Text.Replace('.', ','));
-            book.Authors = new List<string>();
-            string[] authors = txtBxAuthor.Text.Split(';');
-            int j = 0;
-            while (j < authors.Length)
-            {
-                book.Authors.Add(authors[j].Trim());
-                j++;
-            }
-
-            return book;
-        }
-
-        /// <summary>
         /// Кнопка "Сохранить изменения"
         /// </summary>
         /// <param name="sender"></param>
@@ -569,8 +569,8 @@ namespace BookStore
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[0].Value = txtBxTitle.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[1].Value = txtBxAuthor.Text;
                 dtGrdVwBooks.Rows[selectedRowNum].Cells[2].Value = txtBxCategory.Text;
-                dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value = txtBxPrice.Text;  
-                
+                dtGrdVwBooks.Rows[selectedRowNum].Cells[3].Value = txtBxPrice.Text;
+
                 MessageBox.Show("Данные успешно изменены", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 IsTextBoxAvailable = false;
                 ClearTextBoxs();

@@ -219,14 +219,13 @@ namespace BookStore
             // 
             // menuStrip1
             // 
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemFile,
             this.itemHTMLReport});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1227, 36);
+            this.menuStrip1.Size = new System.Drawing.Size(1227, 33);
             this.menuStrip1.TabIndex = 21;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -240,51 +239,51 @@ namespace BookStore
             this.toolStripSeparator2,
             this.CloseFile});
             this.itemFile.Name = "itemFile";
-            this.itemFile.Size = new System.Drawing.Size(69, 32);
+            this.itemFile.Size = new System.Drawing.Size(69, 29);
             this.itemFile.Text = "Файл";
             // 
             // OpenFile
             // 
             this.OpenFile.Name = "OpenFile";
-            this.OpenFile.Size = new System.Drawing.Size(270, 34);
+            this.OpenFile.Size = new System.Drawing.Size(232, 34);
             this.OpenFile.Text = "Открыть";
             this.OpenFile.Click += new System.EventHandler(this.OpenFile_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(229, 6);
             // 
             // SaveFile
             // 
             this.SaveFile.Name = "SaveFile";
-            this.SaveFile.Size = new System.Drawing.Size(270, 34);
+            this.SaveFile.Size = new System.Drawing.Size(232, 34);
             this.SaveFile.Text = "Сохранить";
             this.SaveFile.Click += new System.EventHandler(this.SaveFile_Click);
             // 
             // SaveAsFile
             // 
             this.SaveAsFile.Name = "SaveAsFile";
-            this.SaveAsFile.Size = new System.Drawing.Size(270, 34);
+            this.SaveAsFile.Size = new System.Drawing.Size(232, 34);
             this.SaveAsFile.Text = "Сохранить как";
             this.SaveAsFile.Click += new System.EventHandler(this.SaveAsFile_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(229, 6);
             // 
             // CloseFile
             // 
             this.CloseFile.Name = "CloseFile";
-            this.CloseFile.Size = new System.Drawing.Size(270, 34);
+            this.CloseFile.Size = new System.Drawing.Size(232, 34);
             this.CloseFile.Text = "Закрыть";
             this.CloseFile.Click += new System.EventHandler(this.CloseFile_Click);
             // 
             // itemHTMLReport
             // 
             this.itemHTMLReport.Name = "itemHTMLReport";
-            this.itemHTMLReport.Size = new System.Drawing.Size(141, 32);
+            this.itemHTMLReport.Size = new System.Drawing.Size(141, 29);
             this.itemHTMLReport.Text = "Отчёт в HTML";
             this.itemHTMLReport.Click += new System.EventHandler(this.itemHTMLReport_Click);
             // 
@@ -308,7 +307,7 @@ namespace BookStore
             this.btnSaveEdit.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.btnSaveEdit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.btnSaveEdit.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveEdit.Location = new System.Drawing.Point(993, 333);
+            this.btnSaveEdit.Location = new System.Drawing.Point(993, 371);
             this.btnSaveEdit.Name = "btnSaveEdit";
             this.btnSaveEdit.Size = new System.Drawing.Size(173, 55);
             this.btnSaveEdit.TabIndex = 23;
@@ -330,7 +329,7 @@ namespace BookStore
             // itemAddress
             // 
             this.itemAddress.Name = "itemAddress";
-            this.itemAddress.Size = new System.Drawing.Size(0, 15);
+            this.itemAddress.Size = new System.Drawing.Size(0, 21);
             // 
             // BookStoreForm
             // 
