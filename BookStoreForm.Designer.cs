@@ -307,7 +307,7 @@ namespace BookStore
             this.btnSaveEdit.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.btnSaveEdit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.btnSaveEdit.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveEdit.Location = new System.Drawing.Point(993, 371);
+            this.btnSaveEdit.Location = new System.Drawing.Point(993, 333);
             this.btnSaveEdit.Name = "btnSaveEdit";
             this.btnSaveEdit.Size = new System.Drawing.Size(173, 55);
             this.btnSaveEdit.TabIndex = 23;
@@ -329,7 +329,7 @@ namespace BookStore
             // itemAddress
             // 
             this.itemAddress.Name = "itemAddress";
-            this.itemAddress.Size = new System.Drawing.Size(0, 21);
+            this.itemAddress.Size = new System.Drawing.Size(0, 15);
             // 
             // BookStoreForm
             // 
